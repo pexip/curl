@@ -1,0 +1,25 @@
+name: Sync upstream tags
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Run weekly on Mondays at 06:00 UTC
+    - cron: '0 6 * * 1'
+
+permissions:
+  contents: write
+
+jobs:
+  sync-tags:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Sync tags from upstream
+        run: |
+          git remote get-url upstream 2>/dev/null || git remote add upstream https://github.com/curl/curl.git
+          git fetch upstream --tags
+          git push origin --tags
